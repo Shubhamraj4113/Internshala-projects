@@ -1,0 +1,11 @@
+.rainy {
+background: linear-gradient(120deg,#1e3a8a,#111827);
+}
+
+.sunny {
+background: linear-gradient(120deg,#f59e0b,#92400e);
+}
+
+.cloudy {
+background: linear-gradient(120deg,#374151,#111827);
+}
