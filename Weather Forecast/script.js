@@ -1,95 +1,99 @@
-const apiKey="26412f620a371904481240f99e9f53ce"
+const apiKey = "26412f620a371904481240f99e9f53ce"
 
-let currentTemp=0
-let isCelsius=true
+let isCelsius = true
+let currentTemp = 0
 
-const cityInput=document.getElementById("cityInput")
-const searchBtn=document.getElementById("searchBtn")
-const locationBtn=document.getElementById("locationBtn")
+const cityInput = document.getElementById("cityInput")
+const searchBtn = document.getElementById("searchBtn")
+const locationBtn = document.getElementById("locationBtn")
+const recentCities = document.getElementById("recentCities")
+const errorMsg = document.getElementById("errorMsg")
 
-const cityName=document.getElementById("cityName")
-const temp=document.getElementById("temperature")
-const desc=document.getElementById("description")
-const icon=document.getElementById("weatherIcon")
-const date=document.getElementById("date")
+const cityName = document.getElementById("cityName")
+const dateEl = document.getElementById("date")
+const tempEl = document.getElementById("temperature")
+const descEl = document.getElementById("description")
+const humidity = document.getElementById("humidity")
+const wind = document.getElementById("wind")
+const icon = document.getElementById("weatherIcon")
 
-const wind=document.getElementById("windSpeed")
-const humidity=document.getElementById("humidity")
-const visibility=document.getElementById("visibility")
-const pressure=document.getElementById("pressure")
+const windSpeed = document.getElementById("windSpeed")
+const humidity2 = document.getElementById("humidity2")
+const visibility = document.getElementById("visibility")
+const pressure = document.getElementById("pressure")
 
-const forecast=document.getElementById("forecastContainer")
-const errorMsg=document.getElementById("errorMsg")
+const suggestions = document.getElementById("suggestions")
 
-const rain=document.getElementById("rain")
-const snow=document.getElementById("snow")
+const forecastContainer = document.getElementById("forecast")
 
-searchBtn.onclick=()=>{
-
-let city=cityInput.value.trim()
+searchBtn.addEventListener("click", () => {
+const city = cityInput.value.trim()
 
 if(!city){
-errorMsg.innerText="Enter city name"
+showError("Please enter a city")
 return
 }
 
 getWeather(city)
-
 saveCity(city)
-
-}
-
-locationBtn.onclick=()=>{
-
-navigator.geolocation.getCurrentPosition(pos=>{
-
-getWeatherByCoords(pos.coords.latitude,pos.coords.longitude)
-
 })
 
+locationBtn.addEventListener("click", () => {
+navigator.geolocation.getCurrentPosition(pos=>{
+const lat = pos.coords.latitude
+const lon = pos.coords.longitude
+getWeatherByCoords(lat,lon)
+})
+})
+
+document.getElementById("toggleTemp").addEventListener("click",()=>{
+toggleTemp()
+})
+
+recentCities.addEventListener("change",()=>{
+getWeather(recentCities.value)
+})
+
+function showError(msg){
+errorMsg.innerText = msg
+errorMsg.classList.remove("hidden")
 }
 
-document.getElementById("toggleTemp").onclick=()=>{
-
-if(isCelsius){
-
-temp.innerText=(currentTemp*9/5+32).toFixed(1)+"°F"
-
-}else{
-
-temp.innerText=currentTemp+"°C"
-
-}
-
-isCelsius=!isCelsius
-
+function clearError(){
+errorMsg.classList.add("hidden")
 }
 
 async function getWeather(city){
 
+clearError()
+
 try{
 
-let res=await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`)
+const res = await fetch(
+`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+)
 
-let data=await res.json()
+if(!res.ok) throw new Error()
+
+const data = await res.json()
 
 displayWeather(data)
 
 getForecast(city)
 
 }catch{
-
-errorMsg.innerText="City not found"
-
+showError("City not found")
 }
 
 }
 
 async function getWeatherByCoords(lat,lon){
 
-let res=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`)
+const res = await fetch(
+`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
+)
 
-let data=await res.json()
+const data = await res.json()
 
 displayWeather(data)
 
@@ -99,143 +103,88 @@ getForecast(data.name)
 
 function displayWeather(data){
 
-cityName.innerText=data.name
+cityName.innerText = data.name
+dateEl.innerText = new Date().toDateString()
 
-date.innerText=new Date().toDateString()
+currentTemp = data.main.temp
 
-currentTemp=data.main.temp
+tempEl.innerText = `${currentTemp} °C`
 
-temp.innerText=currentTemp+"°C"
+descEl.innerText = data.weather[0].description
 
-desc.innerText=data.weather[0].description
+humidity.innerText = data.main.humidity
+wind.innerText = data.wind.speed
 
-icon.src=`https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
+icon.src =
+`https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
 
-wind.innerText=data.wind.speed+" m/s"
+windSpeed.innerText = data.wind.speed
+humidity2.innerText = data.main.humidity
+visibility.innerText = data.visibility/1000 + " km"
+pressure.innerText = data.main.pressure
 
-humidity.innerText=data.main.humidity+"%"
+dynamicBackground(data.weather[0].main)
 
-visibility.innerText=data.visibility/1000+" km"
-
-pressure.innerText=data.main.pressure
-
-weatherAnimation(data.weather[0].main)
-
-if(currentTemp>40){
-
-alert("Extreme heat warning!")
-
-}
-
-function setWeatherBackground(condition){
-
-  document.body.classList.remove("rainy","sunny","cloudy")
-
-  if(condition.includes("Rain")){
-    document.body.classList.add("rainy")
-  }
-
-  else if(condition.includes("Cloud")){
-    document.body.classList.add("cloudy")
-  }
-
-  else{
-    document.body.classList.add("sunny")
-  }
-
+if(currentTemp > 40){
+alert("Extreme temperature warning!")
 }
 
 }
 
 async function getForecast(city){
 
-let res=await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`)
+const res = await fetch(
+`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`
+)
 
-let data=await res.json()
+const data = await res.json()
 
-forecast.innerHTML=""
+forecastContainer.innerHTML=""
 
-let days=data.list.filter(x=>x.dt_txt.includes("12:00:00"))
+const days = data.list.filter(item=>item.dt_txt.includes("12:00:00"))
 
 days.forEach(day=>{
 
-let card=document.createElement("div")
+const card = document.createElement("div")
 
-card.className="bg-white/10 p-4 rounded-lg justify-items-center"
+card.className="bg-gray-800 p-3 rounded justify-items-center"
 
-card.innerHTML=`
-
+card.innerHTML = `
 <p>${new Date(day.dt_txt).toDateString()}</p>
-
 <img src="https://openweathermap.org/img/wn/${day.weather[0].icon}.png">
-
 <p>${day.main.temp}°C</p>
-
-<p>💧 ${day.main.humidity}</p>
-
+<p>💧 ${day.main.humidity}%</p>
 <p>💨 ${day.wind.speed}</p>
-
 `
 
-forecast.appendChild(card)
+forecastContainer.appendChild(card)
 
 })
 
 }
 
-function weatherAnimation(condition){
+function toggleTemp(){
 
-rain.innerHTML=""
-snow.innerHTML=""
+if(isCelsius){
 
-rain.classList.add("hidden")
-snow.classList.add("hidden")
+tempEl.innerText = `${(currentTemp*9/5+32).toFixed(1)} °F`
 
-if(condition.includes("Rain")){
+}else{
 
-rain.classList.remove("hidden")
-
-for(let i=0;i<80;i++){
-
-let drop=document.createElement("div")
-
-drop.className="absolute w-0.5 h-8 bg-blue-300 animate-bounce"
-
-drop.style.left=Math.random()*100+"%"
-
-drop.style.animationDuration=Math.random()+0.5+"s"
-
-rain.appendChild(drop)
+tempEl.innerText = `${currentTemp} °C`
 
 }
 
-}
-
-if(condition.includes("Snow")){
-
-snow.classList.remove("hidden")
-
-for(let i=0;i<60;i++){
-
-let flake=document.createElement("div")
-
-flake.className="absolute w-2 h-2 bg-white rounded-full animate-ping"
-
-flake.style.left=Math.random()*100+"%"
-
-snow.appendChild(flake)
-
-}
-
-}
-
+isCelsius = !isCelsius
 }
 
 function saveCity(city){
 
-let cities=JSON.parse(localStorage.getItem("cities"))||[]
+let cities = JSON.parse(localStorage.getItem("cities")) || []
 
-if(!cities.includes(city)) cities.push(city)
+if(!cities.includes(city)){
+cities.push(city)
+}
 
 localStorage.setItem("cities",JSON.stringify(cities))
 
@@ -245,36 +194,106 @@ loadCities()
 
 function loadCities(){
 
-let cities=JSON.parse(localStorage.getItem("cities"))||[]
+let cities = JSON.parse(localStorage.getItem("cities")) || []
 
-let dropdown=document.getElementById("recentCities")
+if(cities.length > 0){
+recentCities.classList.remove("hidden")
+}
 
-if(cities.length>0){
+recentCities.innerHTML=""
 
-dropdown.classList.remove("hidden")
+cities.forEach(c=>{
 
-dropdown.innerHTML=""
+const option = document.createElement("option")
 
-cities.forEach(city=>{
+option.value=c
+option.innerText=c
 
-let option=document.createElement("option")
-
-option.value=city
-
-option.innerText=city
-
-dropdown.appendChild(option)
+recentCities.appendChild(option)
 
 })
 
 }
 
-}
+function dynamicBackground(condition){
 
-document.getElementById("recentCities").onchange=(e)=>{
+document.body.classList.remove("sunny","rainy","cloudy")
 
-getWeather(e.target.value)
+if(condition.includes("Rain"))
+document.body.classList.add("rainy")
+
+else if(condition.includes("Cloud"))
+document.body.classList.add("cloudy")
+
+else
+document.body.classList.add("sunny")
 
 }
 
 loadCities()
+
+cityInput.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    const city = cityInput.value.trim()
+
+    if (!city) {
+      showError("Please enter a city")
+      return
+    }
+
+    getWeather(city)
+    saveCity(city)
+  }
+})
+
+
+cityInput.addEventListener("input", async () => {
+
+  const query = cityInput.value.trim()
+
+  if (query.length < 2) {
+    suggestions.classList.add("hidden")
+    return
+  }
+
+  const res = await fetch(
+  `https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${apiKey}`
+  )
+
+  const data = await res.json()
+
+  suggestions.innerHTML = ""
+
+  data.forEach(city => {
+
+    const li = document.createElement("li")
+
+    li.className = "p-2 hover:bg-gray-700 cursor-pointer"
+
+    li.innerText = `${city.name}, ${city.country}`
+
+    li.addEventListener("click", () => {
+
+      cityInput.value = city.name
+      suggestions.classList.add("hidden")
+
+      getWeather(city.name)
+      saveCity(city.name)
+
+    })
+
+    suggestions.appendChild(li)
+
+  })
+
+  suggestions.classList.remove("hidden")
+
+})
+
+document.addEventListener("click", (e) => {
+
+  if (!cityInput.contains(e.target)) {
+    suggestions.classList.add("hidden")
+  }
+
+})
