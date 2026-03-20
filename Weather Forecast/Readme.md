@@ -35,4 +35,3 @@ Weather-Dashboard/
 - The app fetches weather data from the API  
 - It displays current weather + forecast  
 - It also saves your searched cities for quick access later
-- 
