@@ -19,20 +19,16 @@ I built this project to practice working with APIs, handling user input, and imp
 - OpenWeatherMap API  
 
 ## 📸 Preview
-_(You can add a screenshot of your project here)_
 <img width="1919" height="951" alt="Screenshot 2026-03-20 161853" src="https://github.com/user-attachments/assets/bf5ec00a-b341-4d17-a0e1-7f199c697b73" />
 
 ## 🌐 Live Demo
-_(Add your deployed project link here)_
 👉 Live Link:- https://euphonious-truffle-10a4dc.netlify.app/
-
 
 ## 📂 Project Structure
 Weather-Dashboard/
 ├── index.html
 ├── script.js
 └── README.md
-
 
 ## ⚙️ How it works
 - You enter a city name (or use your location)  
