@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Registration System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Student Registration System</h1>
+    <p>Register, edit, and manage student records easily.</p>
+  </header>
+
+  <main class="container">
+    
+    <!-- FORM -->
+    <section class="form-section">
+      <form id="studentForm">
+        <input type="hidden" id="editIndex" />
+
+        <label>Name</label>
+        <input type="text" id="name" required />
+
+        <label>Student ID</label>
+        <input type="text" id="studentId" required />
+
+        <label>Email ID</label>
+        <input type="email" id="email" required />
+
+        <label>Contact No</label>
+        <input type="text" id="contact" required />
+
+        <button type="submit">Add Student</button>
+      </form>
+    </section>
+
+    <!-- DISPLAY -->
+    <section class="display-section">
+      <h2 style="margin-bottom:10px;">Registered Students</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Contact</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
