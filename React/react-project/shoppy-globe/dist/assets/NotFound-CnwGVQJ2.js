@@ -1,0 +1,1 @@
+import{n as e,t}from"./jsx-runtime-Dgy-hvMB.js";var n=t();function r(){return(0,n.jsxs)(`div`,{className:`not-found`,children:[(0,n.jsx)(`h1`,{children:`404`}),(0,n.jsx)(`h2`,{children:`Page Not Found`}),(0,n.jsx)(`p`,{children:`The page you are looking for does not exist.`}),(0,n.jsx)(e,{to:`/`,children:(0,n.jsx)(`button`,{children:`Back To Home`})})]})}export{r as default};
